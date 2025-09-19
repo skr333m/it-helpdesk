@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Helpdesk Ticketing System</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        header h1 {
+            text-align: center;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #eee;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            margin-bottom: 5px;
+        }
+        
+        .tab.active {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            background: var(--primary);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--light);
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .badge-high {
+            background-color: var(--danger);
+        }
+        
+        .badge-medium {
+            background-color: var(--warning);
+        }
+        
+        .badge-low {
+            background-color: var(--success);
+        }
+        
+        .badge-open {
+            background-color: var(--secondary);
+        }
+        
+        .badge-progress {
+            background-color: var(--warning);
+        }
+        
+        .badge-resolved {
+            background-color: var(--success);
+        }
+        
+        .badge-closed {
+            background-color: var(--dark);
+        }
+        
+        .actions button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            background: var(--success);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .deployment-option {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .deployment-option h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .step {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .step:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        .provider-logo {
+            height: 30px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-bottom: 5px;
+                border-radius: 5px;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>IT Helpdesk Ticketing System</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="submit">Submit Ticket</div>
+            <div class="tab" data-tab="dashboard">Ticket Dashboard</div>
+            <div class="tab" data-tab="deploy">Deployment Guide</div>
+        </div>
+        
+        <div id="notification" class="notification"></div>
+        
+        <div class="tab-content active" id="submit-tab">
+            <div class="card">
+                <h2>Submit New Ticket</h2>
+                <form id="ticket-form">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department" required>
+                            <option value="">Select Department</option>
+                            <option value="IT">IT</option>
+                            <option value="HR">HR</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Operations">Operations</option>
+                            <option value="Sales">Sales</option>
+                            <option value="Marketing">Marketing</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="issue">Issue Type</label>
+                        <select id="issue" required>
+                            <option value="">Select Issue Type</option>
+                            <option value="Hardware">Hardware Problem</option>
+                            <option value="Software">Software Problem</option>
+                            <option value="Network">Network Issue</option>
+                            <option value="Account">Account Access</option>
+                            <option value="Email">Email Issue</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="priority">Priority</label>
+                        <select id="priority" required>
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit">Submit Ticket</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="dashboard-tab">
+            <div class="card">
+                <h2>All Tickets</h2>
+                
+                <div class="filters">
+                    <div class="form-group">
+                        <label for="status-filter">Filter by Status:</label>
+                        <select id="status-filter">
+                            <option value="All">All</option>
+                            <option value="Open">Open</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Closed">Closed</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <table id="tickets-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Subject</th>
+                            <th>Submitted By</th>
+                            <th>Department</th>
+                            <th>Issue Type</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Tickets will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-content" id="deploy-tab">
+            <div class="card">
+                <h2>Deployment Guide</h2>
+                <p>Deploy your IT Helpdesk System to a free web hosting provider:</p>
+                
+                <div class="deployment-option">
+                    <h3>GitHub Pages (Recommended)</h3>
+                    <div class="step">Create a free account at github.com</div>
+                    <div class="step">Create a new repository</div>
+                    <div class="step">Upload this HTML file (rename to index.html)</div>
+                    <div class="step">Go to Settings > Pages > Select main branch</div>
+                    <div class="step">Your site will be available at: username.github.io/repository-name</div>
+                    <button onclick="saveFile()">Download HTML File</button>
+                </div>
+                
+                <div class="deployment-option">
+                    <h3>Netlify</h3>
+                    <div class="step">Create a free account at netlify.com</div>
+                    <div class="step">Drag and drop this HTML file to deploy</div>
+                    <div class="step">Your site will be instantly live with a random URL</div>
+                    <div class="step">You can change the site name in settings</div>
+                    <button onclick="saveFile()">Download HTML File</button>
+                </div>
+                
+                <div class="deployment-option">
+                    <h3>Vercel</h3>
+                    <div class="step">Create a free account at vercel.com</div>
+                    <div class="step">Import your project from GitHub or upload manually</div>
+                    <div class="step">Deploy with one click</div>
+                    <div class="step">Your site will be available immediately</div>
+                    <button onclick="saveFile()">Download HTML File</button>
+                </div>
+                
+                <div class="deployment-option">
+                    <h3>000webhost</h3>
+                    <div class="step">Create a free account at 000webhost.com</div>
+                    <div class="step">Use file manager or FTP to upload your files</div>
+                    <div class="step">Your site will be available at yourname.000webhostapp.com</div>
+                    <button onclick="saveFile()">Download HTML File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tickets array from localStorage or empty array
+            let tickets = JSON.parse(localStorage.getItem('itHelpdeskTickets')) || [];
+            let currentId = parseInt(localStorage.getItem('itHelpdeskCurrentId')) || 1;
+            
+            // DOM Elements
+            const ticketForm = document.getElementById('ticket-form');
+            const ticketsTable = document.getElementById('tickets-table');
+            const statusFilter = document.getElementById('status-filter');
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const notification = document.getElementById('notification');
+            
+            // Tab switching functionality
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show corresponding content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tabId}-tab`) {
+                            content.classList.add('active');
+                        }
+                    });
+                    
+                    // If switching to dashboard, refresh the table
+                    if (tabId === 'dashboard') {
+                        renderTicketsTable();
+                    }
+                });
+            });
+            
+            // Filter functionality
+            statusFilter.addEventListener('change', renderTicketsTable);
+            
+            // Form submission
+            ticketForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const department = document.getElementById('department').value;
+                const issue = document.getElementById('issue').value;
+                const subject = document.getElementById('subject').value;
+                const description = document.getElementById('description').value;
+                const priority = document.getElementById('priority').value;
+                
+                const newTicket = {
+                    id: currentId++,
+                    name,
+                    email,
+                    department,
+                    issue,
+                    subject,
+                    description,
+                    priority,
+                    status: 'Open',
+                    date: new Date().toISOString()
+                };
+                
+                tickets.push(newTicket);
+                saveTickets();
+                renderTicketsTable();
+                
+                // Show success notification
+                showNotification('Ticket submitted successfully!', 'success');
+                
+                // Reset form
+                ticketForm.reset();
+            });
+            
+            // Save tickets to localStorage
+            function saveTickets() {
+                localStorage.setItem('itHelpdeskTickets', JSON.stringify(tickets));
+                localStorage.setItem('itHelpdeskCurrentId', currentId.toString());
+            }
+            
+            // Render tickets table with optional filtering
+            function renderTicketsTable() {
+                const statusValue = statusFilter.value;
+                let filteredTickets = tickets;
+                
+                if (statusValue !== 'All') {
+                    filteredTickets = tickets.filter(ticket => ticket.status === statusValue);
+                }
+                
+                const tbody = ticketsTable.querySelector('tbody');
+                tbody.innerHTML = '';
+                
+                if (filteredTickets.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No tickets found</td></tr>';
+                    return;
+                }
+                
+                filteredTickets.forEach(ticket => {
+                    const row = document.createElement('tr');
+                    
+                    // Format date for display
+                    const ticketDate = new Date(ticket.date);
+                    const formattedDate = `${ticketDate.toLocaleDateString()} ${ticketDate.toLocaleTimeString()}`;
+                    
+                    // Priority badge
+                    let priorityClass = '';
+                    if (ticket.priority === 'High') priorityClass = 'badge-high';
+                    else if (ticket.priority === 'Medium') priorityClass = 'badge-medium';
+                    else if (ticket.priority === 'Low') priorityClass = 'badge-low';
+                    
+                    // Status badge
+                    let statusClass = '';
+                    if (ticket.status === 'Open') statusClass = 'badge-open';
+                    else if (ticket.status === 'In Progress') statusClass = 'badge-progress';
+                    else if (ticket.status === 'Resolved') statusClass = 'badge-resolved';
+                    else if (ticket.status === 'Closed') statusClass = 'badge-closed';
+                    
+                    row.innerHTML = `
+                        <td>${ticket.id}</td>
+                        <td>${ticket.subject}</td>
+                        <td>${ticket.name}</td>
+                        <td>${ticket.department}</td>
+                        <td>${ticket.issue}</td>
+                        <td><span class="badge ${priorityClass}">${ticket.priority}</span></td>
+                        <td><span class="badge ${statusClass}">${ticket.status}</span></td>
+                        <td>${formattedDate}</td>
+                        <td class="actions">
+                            ${ticket.status !== 'Resolved' && ticket.status !== 'Closed' ? 
+                                `<button class="btn-success" onclick="updateTicketStatus(${ticket.id}, 'Resolved')">Resolve</button>` : ''}
+                            ${ticket.status !== 'Closed' ? 
+                                `<button class="btn-warning" onclick="updateTicketStatus(${ticket.id}, 'Closed')">Close</button>` : ''}
+                            <button class="btn-danger" onclick="deleteTicket(${ticket.id})">Delete</button>
+                            <button onclick="viewTicketDetails(${ticket.id})">View</button>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+            }
+            
+            // Update ticket status
+            window.updateTicketStatus = function(id, status) {
+                const ticket = tickets.find(t => t.id === id);
+                if (ticket) {
+                    ticket.status = status;
+                    saveTickets();
+                    renderTicketsTable();
+                    showNotification(`Ticket #${id} status updated to ${status}`, 'success');
+                }
+            };
+            
+            // Delete ticket
+            window.deleteTicket = function(id) {
+                if (confirm('Are you sure you want to delete this ticket?')) {
+                    tickets = tickets.filter(t => t.id !== id);
+                    saveTickets();
+                    renderTicketsTable();
+                    showNotification('Ticket deleted successfully', 'success');
+                }
+            };
+            
+            // View ticket details
+            window.viewTicketDetails = function(id) {
+                const ticket = tickets.find(t => t.id === id);
+                if (ticket) {
+                    alert(`
+Ticket Details:
+ID: ${ticket.id}
+Subject: ${ticket.subject}
+Submitted By: ${ticket.name} (${ticket.email})
+Department: ${ticket.department}
+Issue Type: ${ticket.issue}
+Priority: ${ticket.priority}
+Status: ${ticket.status}
+Date: ${new Date(ticket.date).toLocaleString()}
+Description: ${ticket.description}
+                    `);
+                }
+            };
+            
+            // Show notification
+            function showNotification(message, type = 'success') {
+                notification.textContent = message;
+                notification.style.display = 'block';
+                notification.style.background = type === 'success' ? 'var(--success)' : 'var(--danger)';
+                
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 3000);
+            }
+            
+            // Download HTML file
+            window.saveFile = function() {
+                const htmlContent = `<!DOCTYPE html>${document.documentElement.outerHTML}`;
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'it-helpdesk-system.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            };
+            
+            // Initial render
+            renderTicketsTable();
+        });
+    </script>
+</body>
+</html>
